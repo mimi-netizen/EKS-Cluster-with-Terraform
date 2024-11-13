@@ -1,0 +1,18 @@
+apiVersion: logstash.k8s.elastic.co/v1alpha1
+kind: Logstash
+metadata:
+  name: logstash
+  namespace: elastic
+spec:
+  version: 8.12.0
+  count: 1
+  config:
+    log.level: info
+  podTemplate:
+    spec:
+      containers:
+      - name: logstash
+        resources:
+          limits:
+            memory: 2Gi
+            cpu: 1

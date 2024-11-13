@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: logstash-config
+  namespace: elastic
+data:
+  logstash.conf: |
+    input {
+      beats {
+        port => 5044
+      }
+    }
+    filter {
+      grok {
+        match => { "message" => "%{COMBINEDAPACHELOG}" }
+      }
+    }
+    output {
+      elasticsearch {
+        hosts => ["https://quickstart-es-http.elastic:9200"]
+        user => "elastic"
+        password => "Xr013M63N4SshU1B72x7fhkr"
+        ssl => true
+        cacert => '/usr/share/logstash/config/certs/ca.crt'
+      }
+      stdout { codec => rubydebug }
+    }
