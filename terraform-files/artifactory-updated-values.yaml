@@ -1,0 +1,27 @@
+databaseUpgradeReady: true
+networkpolicy:
+- name: postgresql
+  podSelector:
+    matchLabels:
+      app: postgresql
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: artifactory
+
+postgresql:
+  enabled: true
+  image:
+    registry: releases-docker.jfrog.io
+    repository: bitnami/postgresql
+    tag: 15.6.0-debian-11-r16
+  postgresqlUsername: artifactory
+  postgresqlPassword: ""
+  postgresqlDatabase: artifactory
+  postgresqlExtendedConf:
+    listenAddresses: "*"
+    maxConnections: "1500"
+  persistence:
+    enabled: true
+    size: 200Gi

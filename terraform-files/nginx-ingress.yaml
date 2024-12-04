@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: artifactory-ingress
+  namespace: tools
+  labels:
+    name: artifactory-ingress
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: tooling-artifactory.cdk-aws.dns-dynamic.net
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: artifactory-artifactory-nginx
+            port:
+              number: 80

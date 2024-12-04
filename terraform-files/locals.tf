@@ -51,3 +51,12 @@ locals {
     }
   }
 }
+
+
+locals {
+  ingress_lb_hostname = try(data.kubernetes_service.ingress_nginx.status[0].load_balancer[0].ingress[0].hostname, null)
+}
+
+locals {
+  oidc_provider = replace(data.aws_eks_cluster.cluster.identity[0].oidc[0].issuer, "https://", "")
+}

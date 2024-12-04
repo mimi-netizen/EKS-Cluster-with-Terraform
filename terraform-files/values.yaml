@@ -1,0 +1,60 @@
+databaseUpgradeReady: true
+networkpolicy:
+- name: postgresql
+  podSelector:
+    matchLabels:
+      app: postgresql
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: artifactory
+
+postgresql:
+  enabled: true
+  image:
+    registry: releases-docker.jfrog.io
+    repository: bitnami/postgresql
+    tag: 15.6.0-debian-11-r16
+  postgresqlUsername: artifactory
+  postgresqlPassword: ""
+  postgresqlDatabase: artifactory
+  postgresqlExtendedConf:
+    listenAddresses: "*"
+    maxConnections: "1500"
+  persistence:
+    enabled: true
+    size: 200Gi
+
+ingress:
+  className: nginx
+  namespace: tools
+  enabled: true
+  defaultBackend:
+    enabled: true
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: 500m
+    service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+    service.beta.kubernetes.io/aws-load-balancer-type: nlb
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: ssl
+    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    cert-manager.io/private-key-rotation-policy: Always
+  labels:
+    name: artifactory
+  tls:
+  - hosts:
+    - tooling-artifactory.cdk-aws.dns-dynamic.net
+    secretName: tooling-artifactory.cdk-aws.dns-dynamic.net
+  ingressClassName: nginx
+  rules:
+  - host: tooling-artifactory.cdk-aws.dns-dynamic.net
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: artifactory
+            port:
+              number: 8082
